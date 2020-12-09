@@ -1,0 +1,177 @@
+-- Write a query in SQL to display all the data of employees.
+select * from employees;
+
+-- Write a query in SQL to display all the data of titles.
+select * from titles;
+
+-- Write a query in SQL to display all the data of salaries.
+select * from salaries;
+
+-- Write a query in SQL to display all the data of dept_manager.
+select * from dept_manager;
+
+-- Write a query in SQL to display all the data of departments.
+select * from departments;
+
+-- Write a query in SQL to display all the data of female employees..
+select * from employees where gender = 'F';
+
+-- Write a query in SQL to display all the data of employees hired after ‘1990-01-12’
+select * from employees  where hire_date > '1990-01-12';
+
+-- Write a query in SQL to display all the data of titles
+-- that have a from_date between 1990-01-12 and 1992-11-09;
+select * from titles
+where from_date > '1990-01-12'
+and to_date < '1992-11-09';
+
+-- Write a query in SQL to employee_no that has a salary more than or equal to 1538.
+select emp_no
+from salaries
+where salary >= 1538;
+
+-- Write a query in SQL to display employee_no that has a salary less than 2118.
+select emp_no from salaries
+where salary < 2118;
+
+-- Write a query in SQL to display all of the salary data that
+-- has a salary more than 50000 and less than or equal to 20000
+-- order by salary in asc.
+select salary from salaries
+where salary >50000 or salary<=20000
+order by salary asc;
+
+-- Write a query in SQL to display all the data of employees
+-- that has started from 1820-01-12 and has a birthdate before 1960-09-12.
+select * from employees
+where hire_date >= '1820-01-12'
+and birth_date <= '1960-09-12';
+
+-- Write a query in SQL to display all the data of salaries
+--  that has the highest salary
+select max(salary) from salaries;
+
+-- --
+select * from salaries
+where salary =(select max(salary) from salaries);
+
+-- --
+select * from salaries
+order by salary desc
+limit 1;
+
+-- Write a query in SQL to display the second highest salary
+select * from salaries
+order by salary desc
+limit 1,1;
+
+-- Write a query in SQL to display the third lowest salary
+select * from salaries
+order by salary desc
+limit 2,1;
+
+-- Write a query in SQL to display all Technique Leader
+-- whose from date is after 1920-01-12
+
+select * from titles
+where title = 'Technique Leader'
+and from_date >'1920-01-12';
+
+-- Write a query to display unique senior engineers that started on 1995-02-18
+select distinct(title) from titles
+where title = 'Senior Engineer'
+and from_date > '1995-02-18';
+-- ======================================================
+select * from titles
+where title = (select distinct(title) from titles where title='Senior Engineer')
+and from_date > '1995-02-18';
+
+
+select distinct * from titles
+where title = 'Senior Engineer'
+and from_date > '1995-02-18';
+
+-- Write a query to display unique titles with titles in alphabetical order
+select distinct(title) from titles
+where title like 'A%' or title like 'S%'
+order by title asc;
+
+
+-- Write a query to display average salary of all employees.
+select avg(salary) from salaries;
+
+-- Write a query t o display grouped rows of first name of employees
+-- that are Male and ordered in desc order
+select first_name from employees
+where gender =‘M’
+group by first_name
+order by first_name desc;
+
+-- - ---
+-- select first_name from employees
+-- group by first_name
+-- having
+-- order by first_name desc;
+-- ----
+-- Find emp_no and salary of the employees
+-- whose salary is greater than the average salary of all positions
+select emp_no, salary from salaries
+where salary > (select avg(salary) from salaries);
+
+-- Write SQL statement that shows number of people born
+-- on each date after 1960-09-12. So we know how many gifts to order.
+select count(emp_no), birth_date from employees
+group by birth_date
+having birth_date> '1960-09-12'
+order by birth_date asc;
+
+-- List the count of each first name, except the Parto,
+-- sorted high to low.Only include names which occur 228 or more items.
+select count(first_name), first_name from employees
+where first_name <> ‘Parto’
+group by first_name
+having count(first_name)>=228
+order by first_name desc;
+
+-- 24.How to find Third highest salary in Employee table using self-join (sub-query)?
+-- Write an SQL query to find the 10th highest employee salary from an salaries table.
+-- Given a table ‘employee’ where the column emp_no is a unique numeric identifier,
+--  how can you efficiently select the first 100 odd id values from the table?
+select  emp_no from employees
+where emp_no % 2=1
+order by emp_no
+limit 100;
+
+-- Write a query to fetch the number of employees working in the title ‘Manager’.
+select count(e.emp_no), t.title from employees e
+join titles t using(emp_no)
+where t.title = ‘Manager’
+group by title;
+select count(*) from titles
+where title='Manager';
+
+
+-- Write a query to find the first_names of employees that begin with ‘S’
+select first_name from employees
+where first_name like ('S%');
+
+-- Write a query find number of employees whose started date is
+-- between 2007-06-11 to 2017-09-14.
+select count(emp_no), hire_date from employees
+where hire_date between '1995-06-11' and '2000-09-14'
+group by hire_date;
+
+-- Write a query to retrieve two minimum salaries from the salaries table.
+select salary from salaries
+order by salary asc
+limit 2;
+----
+SELECT DISTINCT salary FROM salaries E1
+ WHERE 2 >= (SELECT COUNT(DISTINCT salary)FROM salaries E2
+  WHERE E1.salary >= E2.salary) ORDER BY E1.salary DESC;
+  
+-- Write a query to retrieve two maximum salaries from the salaries table.
+select salary from salaries
+order by salary desc
+limit 2;
+;
