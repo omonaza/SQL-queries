@@ -1,0 +1,166 @@
+use classicmodels;
+-- Select Office city that has most of employees
+
+SELECT city 
+FROM offices
+WHERE officeCode = -- Select ciyt using that office code
+	(
+	SELECT officeCode -- select only office code
+	FROM (
+			select officeCode, count(*) AS n -- Groups the employee count by office code
+			from employees
+			GROUP BY officeCode
+			ORDER BY n DESC -- puts the result in desc order by count of employees
+			LIMIT 1 -- limits out result set to the given number
+	) AS q
+);
+
+select officeCode, count(*) n -- Groups the employee count by office code
+			from employees
+			GROUP BY officeCode
+			ORDER BY n DESC -- puts the result in desc order by count of employees
+			LIMIT 2, 1 ;  -- limits out result set to the given number;
+            
+            -- Display info about a customer that made the most orders
+		-- 1) display number of orders per customer
+        -- 2) display top customer id
+        -- 3) get customer number
+        -- 4) get info for that customer
+SELECT *
+FROM customers
+WHERE customerNumber = 
+(
+	SELECT customerNumber
+	FROM 
+	(
+		 SELECT customerNumber, count(customerNumber) numOfOrders
+		 FROM orders
+		 GROUP BY customerNumber
+		 ORDER BY numOfOrders DESC
+		 LIMIT 1
+	) q
+);
+
+-- Display Employees that don't have customers
+-- inner corelated query 
+SELECT *
+FROM employees e1
+WHERE NOT EXISTS (
+	SELECT *
+    FROM customers 
+    WHERE salesRepEmployeeNumber = e1.employeeNumber
+);
+-- 23
+-- 15
+-- 100
+
+-- second way with joint 
+SELECT *
+FROM customers
+JOIN employees
+ON salesRepEmployeeNumber = employeeNumber;
+
+SELECT T2.orderNumber, status, productCode, quantityOrdered, priceEach
+FROM orders T1
+JOIN orderdetails T2
+ON T1.orderNumber = T2.orderNumber;
+
+SELECT employeeNumber, firstName, lastName, count(customerNumber) AS numOfCustomers
+FROM customers
+JOIN employees
+ON salesRepEmployeeNumber = employeeNumber
+GROUP BY employeeNumber, firstName, lastName
+HAVING numOfCustomers  > 5;
+
+-- Display emp that has the most customers
+SELECT employeeNumber, firstName, lastName, count(customerNumber) AS numOfCustomers
+FROM customers
+JOIN employees
+ON salesRepEmployeeNumber = employeeNumber
+GROUP BY employeeNumber, firstName, lastName
+ORDER BY numOfCustomers DESC
+LIMIT 1;
+
+SELECT status, productCode, quantityOrdered, priceEach
+FROM orders
+JOIN orderdetails
+USING(orderNumber);
+
+-- Display customer number and customer name and the information of the office custommer belongs to
+
+SELECT customerNumber, customerName, offices.*
+FROM customers
+JOIN employees -- Include emplyee info for each customer record
+ON salesRepEmployeeNumber = employeeNumber
+JOIN offices -- include office info for each employee record 
+USING(officeCode);
+
+-- Display number of customer that belong to each office
+
+SELECT officeCode, T1.city, count(customerName) numOfCust
+FROM customers
+JOIN employees -- Include emplyee info for each customer record
+ON salesRepEmployeeNumber = employeeNumber
+JOIN offices T1 -- include office info for each employee record 
+USING(officeCode)
+GROUP BY officeCode, T1.city 
+ORDER BY numOfCust DESC
+LIMIT 1;
+
+-- DISPLAY the most popular product name
+
+SELECT productName, count(orderNumber) timesOrdered
+FROM orderdetails
+JOIN products
+USING(productCode)
+GROUP BY productName
+ORDER BY timesOrdered DESC
+LIMIT 1;
+
+-- display product that made the most sales
+SELECT productName, sum(quantityOrdered * buyPrice) totalSales
+FROM orderdetails
+JOIN products
+USING(productCode)
+GROUP BY productName
+ORDER BY totalSales DESC
+LIMIT 1;
+
+-- display second customer that paid the most 
+SELECT customerNumber, customerName, SUM(amount) totalPaid
+FROM customers
+JOIN payments
+USING(customerNumber)
+GROUP BY customerNumber, customerName
+ORDER BY totalPaid DESC
+LIMIT 1, 1; -- 1st par - offset, 2nd - limit
+
+-- Second most expensive product
+SELECT *
+FROM products
+order by buyPrice desc
+limit 1, 1;
+
+-- Display order number, total per order, product name and text description of prd line
+
+SELECT productLine, quantityOrdered * priceEach, productName, textDescription
+FROM orderdetails
+JOIN products
+USING(productCode) 
+JOIN productlines
+USING(productLine);
+
+-- disp prod line and text description of product line that made most sales
+SELECT productLine, textDescription, sum(quantityOrdered * priceEach) totalSales
+FROM orderdetails
+JOIN products
+USING(productCode) 
+JOIN productlines
+USING(productLine)
+GROUP BY productLine, textDescription
+ORDER BY totalSales DESC
+LIMIT 1
+
+
+-- ETL Extract Transfer Load
+-- Data migration
