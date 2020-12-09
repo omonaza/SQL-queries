@@ -1,0 +1,101 @@
+select *
+from customers;
+
+select *
+from employees;
+
+SELECT contactFirstName, contactLastName
+FROM customers;
+
+SELECT CONCAT(contactFirstName, ' ', contactLastName) AS ContactName
+FROM customers;
+
+-- Display the maximum credit limit
+-- -- 227600.00
+SELECT MAX(creditLimit)
+FROM customers;
+
+SELECT *
+FROM customers
+WHERE creditLimit = 227600.00;
+
+-- Display order number and total amount for current items
+SELECT orderNumber, productCode, quantityOrdered, priceEach,
+ quantityOrdered * priceEach AS total
+FROM orderdetails;
+
+SELECT *
+FROM orderdetails
+WHERE (quantityOrdered * priceEach) > 5000;
+
+SELECT *
+FROM employees
+WHERE reportsTo IS NOT null;
+
+-- DISPLAY THE COMMPLETE TOTAL OF SALES IN orderdetails table
+SELECT SUM(quantityOrdered * priceEach) AS totalOfSales
+FROM orderdetails;
+
+-- SELECT *
+-- FROM offices
+-- WHERE state = 'CA'
+-- OR state = 'NY';
+
+
+SELECT *
+FROM offices
+WHERE state IN ('CA', 'NY');
+
+SELECT * 
+FROM customers
+WHERE customerName LIKE ('A%');
+
+SELECT substr(country, 1, 3) as country 
+FROM customers;
+
+-- Display all customer information 
+-- who live in USA and whose credit is more than 2000
+
+SELECT *
+FROM customers
+WHERE country = 'USA'
+AND creditLimit > 2000;
+
+SELECT *
+FROM customers
+WHERE creditLimit = ( 
+	SELECT MAX(creditLimit)
+	FROM customers
+);
+
+SELECT *
+FROM orders
+WHERE customerNumber IN
+(
+	SELECT customerNumber
+	FROM customers
+	WHERE customerName LIKE ('A%')
+);
+
+-- 'pat'
+
+SELECT *  -- outer query
+FROM (
+SELECT CONCAT(firstName, ' ', lastName) as name -- inner query
+FROM employees
+) AS q
+WHERE name LIKE ('%pat%');
+
+-- Display product info for the order with max total
+SELECT *
+FROM products 
+WHERE productCode = 
+(
+	SELECT productCode
+	FROM orderdetails
+	WHERE (quantityOrdered * priceEach) =
+	(
+		SELECT MAX(quantityOrdered * priceEach) AS totalOfSales
+		FROM orderdetails
+	)
+);
