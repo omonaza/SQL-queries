@@ -1,0 +1,87 @@
+use classicmodels;
+SELECT *
+FROM classicmodels.customers;
+
+SELECT *
+from employees;
+
+select contactFirstName,contactLastName
+from customers;
+
+select concat(contactLastName,' ',contactFirstName) AS contactName
+from customers;
+
+select max(creditLimit)
+from customers;
+
+select *
+from customers
+where creditLimit = '227600.00';
+
+select orderNumber,productCode,quantityOrdered,priceEach,
+quantityOrdered * priceEach AS Total
+from orderdetails;
+
+select *
+from orderdetails
+where (quantityOrdered * priceEach) > 5000;
+
+SELECT *
+from employees
+where reportsTo is not null;
+
+select sum(quantityOrdered * priceEach) as totalOfSales
+from orderdetails;
+
+
+
+SELECT *
+from offices 
+where state IN  ('CA','NY');
+
+SELECT *
+from customers
+where customerName like ('A%');
+
+-- Create a query to display
+-- customer first and last name in 1 column as well as address, city, state, country in another (total 2 clomuns)
+
+ SELECT CONCAT(contactFirstName, ' ', contactLastName) as Fullname,
+concat(addressLine1,'',city,'',country,'',state) as address
+FROM customers;
+
+-- 2)
+-- display all the motorcycle products
+select *
+from products
+where productLine = 'Motorcycles';
+
+
+-- 3)
+-- Select all the Sales Rep employees information 
+select *
+from employees
+where jobTitle = 'Sales Rep';
+
+-- 4)
+-- Display total number of orders created.
+select count(orderNumber)
+from orders;
+-- 5)
+-- Display all the products
+-- that are Classic Cars and that have in stock more than 5000 of
+select *
+from products
+where productLine = 'Classic Cars'
+and quantityInStock > 5000;
+
+-- 6)
+-- Display all employee info who report to a person that doesn't report to anyone
+-- (use inner query in where clause)
+
+select *
+from employees
+where reportsTo = (
+select employeeNumber
+where reportsTo is null
+);
