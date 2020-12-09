@@ -1,0 +1,214 @@
+ELECT count(orderNumber) numOfOrders
+FROM orders
+WHERE status = 'Shipped'
+and status is null;
+
+-- Display all employee info who report to a person that doesn't report to anyone
+-- (use inner query in where clause)
+select * 
+from employees
+where reportsTo = (
+select employeeNumber
+from employees
+where reportsTo is null
+);
+
+
+SELECT DISTINCT jobTitle
+FROM employees;
+
+SELECT *
+FROM orderdetails
+ORDER BY priceEach;
+
+-- Display comments for orders that have quantity ordered more than or equal to 50
+
+select comments
+from orders
+where orderNumber in (
+
+select orderNumber
+from orderdetails
+where quantityOrdered >=50
+)
+and comments is not null;
+
+
+select * from productlines;
+
+-- DISPLAY THE product line text description for the cheapest product
+
+SELECT textDescription -- By Using product line from the nested query get the text description
+FROM productlines
+WHERE productLine = 
+(
+	SELECT productLine -- Using minimum price get the product line of the cheapest product
+	FROM products
+	WHERE buyPrice = 
+	(
+		SELECT min(buyPrice) as price -- Get the minimum price 
+		FROM  products
+	)
+);
+
+SELECT * FROM payments;
+ -- Display all info about a customer who made the largest payment
+ 
+ 
+SELECT * -- BY Using customer number get all the information on that customer
+FROM customers
+WHERE customerNumber = 
+(
+	SELECT customerNumber -- By using max payment amount get the customer number who made that payment
+	FROM payments 
+	WHERE amount = 
+	(
+		SELECT MAX(amount) -- Find the max payment
+		FROM payments
+	)
+);
+
+-- 1 NOT IN (1, 2, 3, 4, 5) = false
+SELECT comments
+FROM orders
+WHERE orderNumber not IN 
+(
+	SELECT orderNumber
+	FROM orderdetails
+	WHERE quantityOrdered = 50
+)
+AND comments IS NOT NULL;
+
+-- DISPLAY order details for orders with quantity more than 10 but less than 50
+SELECT *
+FROM orderdetails
+WHERE quantityOrdered BETWEEN 10 AND 50;
+
+-- DISPLAY a customer info that didn't make any orders
+-- INNER corelated query
+SELECT *
+FROM customers c
+WHERE NOT EXISTS (
+	SELECT customerNumber 
+    FROM orders 
+    WHERE customerNumber = c.customerNumber
+);
+
+-- ALL value compared has to be equal to all values reteived from inner corelated query
+-- ANY value compared has to be equal to any of the values reteived from inner corelated query
+
+SELECT *
+FROM orders
+WHERE orderNumber > ANY
+(
+	SELECT orderNumber -- irder numbers for orders with price each between 25 and 45
+	FROM orderdetails
+	WHERE priceEach BETWEEN 25 AND 45
+);
+
+SELECT *
+FROM products
+WHERE buyPrice < ANY
+(
+	SELECT buyPrice
+    FROM products
+);
+
+SELECT * FROM products;
+
+-- display info like productLine | number Of products under that line
+SELECT productLine, count(*) AS qty
+FROM products
+GROUP BY productLine;
+
+
+-- Display employee number and number of empoyees managed by that employee
+SELECT reportsTo, count(*) numberOfEmployeesManaged
+FROM employees
+GROUP BY reportsTo
+HAVING reportsTo is not null;
+
+SELECT country, count(*) numOfOffices
+FROM offices
+group by COUNTRY
+HAVING numOfOffices > 1;
+
+-- DIsplay the sumary of payments per customer
+SELECT customerNumber, SUM(amount) total
+FROM payments
+WHERE customerNumber = 458 -- WHERE filteres the data before the grouping
+GROUP BY customerNumber 
+HAVING total > 10000; -- HAVING filters after the grouping
+
+SELECT MAX(total) max_amount_paid
+FROM 
+(
+SELECT customerNumber, SUM(amount) total
+FROM payments
+GROUP BY customerNumber 
+) q;
+
+SELECT productVendor, count(*) numOfItems
+FROM products
+GROUP BY productVendor
+HAVING numOfItems > 7;
+
+SELECT orderNumber,  SUM(quantityOrdered * priceEach) total
+FROM orderdetails
+GROUP BY orderNumber;
+
+-- GROUP BY can use more than one column we are grouping by
+select officeCode, jobTitle, count(*) 
+from employees
+group by officeCode, jobTitle;
+
+-- Display number of customers per country and the state
+SELECT country, state, count(customerNumber) numOfCust
+FROM customers
+GROUP BY country, state
+HAVING numOfCust > 1
+AND state IS NOT NULL;
+
+
+-- Display name and description of the product we have in stock most. 
+-- (name of the product that has max stock quantity);
+
+select productDescription,productName,max(quantityInStock) maxInStock
+from products
+group by productDescription,productName;
+
+-- 2) 
+-- Display payments in descending order by the date they were made on
+
+ select * 
+ from payments
+order by paymentDate DESC;
+
+
+-- 3)
+-- Display inforation about the customer that has the smalest credit line
+
+select * 
+from customers
+where creditLimit = (
+
+select max(creditLimit)
+from customers
+
+)
+and creditLimit is not null;
+
+
+-- 4)
+-- Display number of orders by their status (Group By)
+
+select count(orderNumber)
+from orders
+where status = 'Group By';
+
+-- 5)
+-- SELECT summary of payments made per customerNumber
+
+SELECT customerNumber, SUM(amount) total
+FROM payments
+GROUP BY customerNumber ;
