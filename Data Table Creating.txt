@@ -1,0 +1,27 @@
+USE pract;
+
+CREATE TABLE aza_table (
+id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+first_name VARCHAR(30) NOT NULL,
+last_name varchar(30) NOT NULL,
+email varchar(50)
+);
+
+ALTER TABLE aza_table RENAME TO azaRenamed_table_name;
+
+INSERT INTO azaRenamed_table_name
+VALUES(null, 'Aza', 'omon', 'omonaza@gmail.com');
+
+select * FROM azaRenamed_table_name;
+
+UPDATE azaRenamed_table_name
+SET email = null
+WHERE id = 3;
+
+DELETE 
+FROM azaRenamed_table_name
+WHERE id = 1;
+
+TRUNCATE TABLE nazar_table; -- Deletes the data but table remain in the database 
+
+DROP TABLE nazar_table; -- Delete table completely
